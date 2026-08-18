@@ -3,18 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CATEGORIES, SITE } from "@/lib/constants";
-import { formatRub } from "@/lib/format";
 import { ProductCard } from "@/components/ProductCard";
 import { useI18n } from "@/components/I18nProvider";
 import { useStore } from "@/components/StoreProvider";
 
 export default function HomePage() {
-  const { t } = useI18n();
+  const { t, formatPrice } = useI18n();
   const { products, loaded } = useStore();
   const hits = products.filter((p) => p.isHit).slice(0, 8);
   const armenian = products.filter((p) => p.origin === "armenia").slice(0, 4);
   const news = products.filter((p) => p.isNew).slice(0, 4);
-  const minHit = loaded && hits.length ? formatRub(Math.min(...hits.map((p) => p.price))) : "9 800 ₽";
+  const minHit = loaded && hits.length ? formatPrice(Math.min(...hits.map((p) => p.price))) : formatPrice(9800);
 
   return (
     <div>

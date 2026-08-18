@@ -21,6 +21,7 @@ type StoreContextValue = {
   favorites: string[];
   addToCart: (item: CartItem) => void;
   setQty: (productId: string, quantity: number, size?: string) => void;
+  changeSize: (productId: string, oldSize: string | undefined, newSize: string) => void;
   removeFromCart: (productId: string, size?: string) => void;
   clearCart: () => void;
   toggleFavorite: (productId: string) => void;
@@ -96,6 +97,22 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  const changeSize = useCallback((productId: string, oldSize: string | undefined, newSize: string) => {
+    if ((oldSize || "") === newSize) return;
+    setCart((prev) => {
+      const current = prev.find((line) => sameLine(line, { productId, size: oldSize }));
+      if (!current) return prev;
+      const without = prev.filter((line) => !sameLine(line, { productId, size: oldSize }));
+      const existing = without.findIndex((line) => sameLine(line, { productId, size: newSize }));
+      if (existing >= 0) {
+        const next = [...without];
+        next[existing] = { ...next[existing], quantity: next[existing].quantity + current.quantity };
+        return next;
+      }
+      return [...without, { ...current, size: newSize }];
+    });
+  }, []);
+
   const removeFromCart = useCallback((productId: string, size?: string) => {
     setCart((prev) => prev.filter((line) => !sameLine(line, { productId, size })));
   }, []);
@@ -122,6 +139,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       favorites,
       addToCart,
       setQty,
+      changeSize,
       removeFromCart,
       clearCart,
       toggleFavorite,
@@ -135,6 +153,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       favorites,
       addToCart,
       setQty,
+      changeSize,
       removeFromCart,
       clearCart,
       toggleFavorite,

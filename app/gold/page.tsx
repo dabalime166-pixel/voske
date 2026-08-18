@@ -34,6 +34,7 @@ export default function GoldPage() {
       return;
     }
     setGold(data);
+    window.dispatchEvent(new Event("voske-rates"));
   }
 
   const calc = useMemo(() => {

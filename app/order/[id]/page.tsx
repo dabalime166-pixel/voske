@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SITE } from "@/lib/constants";
-import { formatDateTime, formatRub } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import type { Order } from "@/lib/types";
 import { useI18n } from "@/components/I18nProvider";
 
 export default function OrderSuccessPage() {
   const { id } = useParams<{ id: string }>();
-  const { t, dateLocale } = useI18n();
+  const { t, dateLocale, formatPrice } = useI18n();
   const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
@@ -45,13 +45,13 @@ export default function OrderSuccessPage() {
               <span>
                 {item.name} × {item.quantity}
               </span>
-              <span>{formatRub(item.price * item.quantity)}</span>
+              <span>{formatPrice(item.price * item.quantity)}</span>
             </li>
           ))}
         </ul>
         <p className="mt-4 flex justify-between text-lg font-semibold">
           <span>{t("order.total")}</span>
-          <span>{formatRub(order.total)}</span>
+          <span>{formatPrice(order.total)}</span>
         </p>
       </div>
       <Link href="/catalog" className="btn btn-line mt-10 inline-flex">

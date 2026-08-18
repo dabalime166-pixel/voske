@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { SITE } from "@/lib/constants";
+import { DELIVERY_RUB, FREE_DELIVERY_RUB, priceRub } from "@/lib/pricing";
 import { createOrder, getOrders, getProducts } from "@/lib/store";
 import { isAdmin } from "@/lib/auth";
 import type { CartItem, Order } from "@/lib/types";
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
         name: product.name,
         sku: product.sku,
         image: product.images[0] || "/images/voske-logo.jpg",
-        price: product.price,
+        price: priceRub(product, item.size),
         quantity: item.quantity,
         size: item.size,
         metal: product.metal,
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     });
 
     const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const deliveryPrice = deliveryMethod === "pickup" ? 0 : subtotal >= 25000 ? 0 : 790;
+    const deliveryPrice = deliveryMethod === "pickup" ? 0 : subtotal >= FREE_DELIVERY_RUB ? 0 : DELIVERY_RUB;
     const order = await createOrder({
       items: orderItems,
       subtotal,

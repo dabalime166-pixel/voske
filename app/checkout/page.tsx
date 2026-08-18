@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SITE } from "@/lib/constants";
-import { formatRub } from "@/lib/format";
+import { DELIVERY_RUB, FREE_DELIVERY_RUB, priceRub } from "@/lib/pricing";
 import { useI18n } from "@/components/I18nProvider";
 import { useStore } from "@/components/StoreProvider";
 
@@ -20,7 +20,7 @@ const empty = {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, formatPrice } = useI18n();
   const { cart, products, clearCart } = useStore();
   const [customer, setCustomer] = useState(empty);
   const [deliveryMethod, setDeliveryMethod] = useState<"courier" | "pickup" | "cdek">("courier");
@@ -31,8 +31,8 @@ export default function CheckoutPage() {
   const lines = cart
     .map((item) => ({ item, product: products.find((p) => p.id === item.productId) }))
     .filter((line) => line.product);
-  const subtotal = lines.reduce((sum, line) => sum + (line.product?.price || 0) * line.item.quantity, 0);
-  const deliveryPrice = deliveryMethod === "pickup" ? 0 : subtotal >= 25000 ? 0 : 790;
+  const subtotal = lines.reduce((sum, line) => sum + priceRub(line.product!, line.item.size) * line.item.quantity, 0);
+  const deliveryPrice = deliveryMethod === "pickup" ? 0 : subtotal >= FREE_DELIVERY_RUB ? 0 : DELIVERY_RUB;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -121,15 +121,15 @@ export default function CheckoutPage() {
           <p className="text-xl font-semibold">{t("checkout.total")}</p>
           <p className="mt-4 flex justify-between text-sm">
             <span>{t("checkout.items")}</span>
-            <span>{formatRub(subtotal)}</span>
+            <span>{formatPrice(subtotal)}</span>
           </p>
           <p className="mt-2 flex justify-between text-sm">
             <span>{t("checkout.shipCost")}</span>
-            <span>{deliveryPrice ? formatRub(deliveryPrice) : t("checkout.free")}</span>
+            <span>{deliveryPrice ? formatPrice(deliveryPrice) : t("checkout.free")}</span>
           </p>
           <p className="mt-4 flex justify-between text-lg font-semibold">
             <span>{t("checkout.pay")}</span>
-            <span>{formatRub(subtotal + deliveryPrice)}</span>
+            <span>{formatPrice(subtotal + deliveryPrice)}</span>
           </p>
           {error && <p className="mt-3 text-sm text-[var(--pomegranate)]">{error}</p>}
           <button disabled={pending} className="btn btn-dark mt-6 w-full">

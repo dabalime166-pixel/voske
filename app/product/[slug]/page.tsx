@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { COLLECTION_KEY, STONE_KEY } from "@/lib/i18n";
-import { discountPercent, formatRub } from "@/lib/format";
+import { discountPercent } from "@/lib/format";
+import { defaultSize, oldPriceRub, priceRub, weightForSize } from "@/lib/pricing";
 import { productDescription, productName, productReviewText } from "@/lib/product-i18n";
 import { IconHeart } from "@/components/Icons";
 import { ProductCard } from "@/components/ProductCard";
@@ -14,7 +15,7 @@ import { useStore } from "@/components/StoreProvider";
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>();
-  const { t, locale } = useI18n();
+  const { t, locale, formatPrice } = useI18n();
   const { products, addToCart, favorites, toggleFavorite } = useStore();
   const product = products.find((p) => p.slug === slug);
   const [size, setSize] = useState("");
@@ -24,11 +25,20 @@ export default function ProductPage() {
     [products, product],
   );
 
+  useEffect(() => {
+    if (!product) return;
+    setSize(defaultSize(product));
+    setQty(1);
+  }, [product]);
+
   if (!product) {
     return <div className="px-8 py-24 text-center">{t("product.loading")}</div>;
   }
 
-  const sale = discountPercent(product.price, product.oldPrice);
+  const unit = priceRub(product, size || undefined);
+  const was = oldPriceRub(product, size || undefined);
+  const grams = weightForSize(product, size || undefined);
+  const sale = discountPercent(unit, was);
   const loved = favorites.includes(product.id);
   const needsSize = product.sizes.length > 0;
   const name = productName(product, locale);
@@ -53,16 +63,19 @@ export default function ProductPage() {
             {t("card.inspired", { brand: product.inspiredBy })} · {t("product.sku", { article: product.article, sku: product.sku })}
           </p>
           <div className="mt-6 flex items-end gap-3">
-            <span className="text-3xl font-semibold">{formatRub(product.price)}</span>
-            {product.oldPrice ? <span className="text-lg line-through opacity-40">{formatRub(product.oldPrice)}</span> : null}
+            <span className="text-3xl font-semibold">{formatPrice(unit)}</span>
+            {was ? <span className="text-lg line-through opacity-40">{formatPrice(was)}</span> : null}
             {sale > 0 && <span className="rounded-full bg-[#111] px-2.5 py-1 text-xs text-white">−{sale}%</span>}
           </div>
+          {size && needsSize && (
+            <p className="mt-2 text-sm text-[var(--ink-soft)]">{t("product.sizePrice", { size })}</p>
+          )}
           <p className="mt-6 leading-8 text-[var(--ink-soft)]">{productDescription(product, locale)}</p>
 
           <dl className="mt-8 grid grid-cols-2 gap-4 text-sm">
             <div><dt className="opacity-50">{t("product.metal")}</dt><dd>{t(`metal.${product.metal}`)}</dd></div>
             <div><dt className="opacity-50">{t("product.purity")}</dt><dd>{product.purity}</dd></div>
-            <div><dt className="opacity-50">{t("product.weight")}</dt><dd>{t("card.weight", { weight: product.weight })}</dd></div>
+            <div><dt className="opacity-50">{t("product.weight")}</dt><dd>{t("card.weight", { weight: grams })}</dd></div>
             <div><dt className="opacity-50">{t("product.stones")}</dt><dd>{stones || t("product.noStones")}</dd></div>
             <div><dt className="opacity-50">{t("product.warranty")}</dt><dd>{t("product.months", { n: product.warrantyMonths })}</dd></div>
             <div><dt className="opacity-50">{t("product.stock")}</dt><dd>{product.inStock ? t("product.inStock", { n: product.stockCount }) : t("product.out")}</dd></div>
@@ -72,15 +85,21 @@ export default function ProductPage() {
             <div className="mt-8">
               <p className="mb-2 text-sm">{t("product.size")}</p>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSize(s)}
-                    className={`h-11 min-w-11 rounded-full px-3 ${size === s ? "bg-[#111] text-white" : "bg-white"}`}
-                  >
-                    {s}
-                  </button>
-                ))}
+                {product.sizes.map((s) => {
+                  const sizedPrice = priceRub(product, s);
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => setSize(s)}
+                      className={`min-w-16 rounded-2xl px-3 py-2 text-left ${size === s ? "bg-[#111] text-white" : "bg-white"}`}
+                    >
+                      <span className="block text-sm font-semibold">{s}</span>
+                      <span className={`block text-[11px] ${size === s ? "text-white/70" : "text-[var(--ink-soft)]"}`}>
+                        {formatPrice(sizedPrice)}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -96,7 +115,7 @@ export default function ProductPage() {
               onClick={() => addToCart({ productId: product.id, quantity: qty, size: size || undefined })}
               className="btn btn-dark disabled:opacity-40"
             >
-              {t("product.add")}
+              {t("product.add")} · {formatPrice(unit * qty)}
             </button>
             <button onClick={() => toggleFavorite(product.id)} className="rounded-full bg-white p-3" aria-label={t("nav.favorites")}>
               <IconHeart filled={loved} />

@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { COLLECTION_KEY } from "@/lib/i18n";
-import { discountPercent, formatRub } from "@/lib/format";
+import { discountPercent } from "@/lib/format";
+import { oldPriceRub, priceRub } from "@/lib/pricing";
 import { productName } from "@/lib/product-i18n";
 import type { Product } from "@/lib/types";
 import { IconHeart } from "./Icons";
@@ -11,12 +12,17 @@ import { useI18n } from "./I18nProvider";
 import { useStore } from "./StoreProvider";
 
 export function ProductCard({ product }: { product: Product }) {
-  const { t, locale } = useI18n();
+  const { t, locale, formatPrice } = useI18n();
   const { favorites, toggleFavorite } = useStore();
   const loved = favorites.includes(product.id);
-  const sale = discountPercent(product.price, product.oldPrice);
+  const unit = product.sizes.length
+    ? Math.min(...product.sizes.map((s) => priceRub(product, s)))
+    : priceRub(product);
+  const was = oldPriceRub(product);
+  const sale = discountPercent(priceRub(product), was);
   const name = productName(product, locale);
   const colKey = COLLECTION_KEY[product.collection];
+  const from = product.sizes.length > 1;
 
   return (
     <article className="product-card group relative flex flex-col">
@@ -69,8 +75,10 @@ export function ProductCard({ product }: { product: Product }) {
           {colKey ? ` · ${t(`col.${colKey}`)}` : ""}
         </p>
         <div className="mt-auto flex items-end gap-2 pt-3">
-          <span className="text-lg font-semibold">{formatRub(product.price)}</span>
-          {product.oldPrice ? <span className="text-sm text-[var(--ink-soft)] line-through">{formatRub(product.oldPrice)}</span> : null}
+          <span className="text-lg font-semibold">
+            {from ? t("product.from", { price: formatPrice(unit) }) : formatPrice(unit)}
+          </span>
+          {was ? <span className="text-sm text-[var(--ink-soft)] line-through">{formatPrice(was)}</span> : null}
         </div>
       </div>
     </article>

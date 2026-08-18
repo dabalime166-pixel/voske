@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { CATEGORIES, SITE } from "@/lib/constants";
-import { formatRub } from "@/lib/format";
 import { productName } from "@/lib/product-i18n";
 import { IconBag, IconClose, IconHeart, IconMenu, IconSearch, IconTelegram } from "./Icons";
 import { LanguageSwitch, useI18n } from "./I18nProvider";
@@ -22,7 +21,7 @@ const NAV = [
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { t, locale } = useI18n();
+  const { t, locale, formatPrice } = useI18n();
   const { cart, favorites, products } = useStore();
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -167,7 +166,7 @@ export function Header() {
                   onClick={() => router.push(`/product/${product.slug}`)}
                 >
                   <span>{productName(product, locale)}</span>
-                  <span className="text-sm">{formatRub(product.price)}</span>
+                  <span className="text-sm">{formatPrice(product.price)}</span>
                 </button>
               ))}
               {query.length >= 2 && results.length === 0 && <p className="py-6 text-sm opacity-60">{t("search.empty")}</p>}
