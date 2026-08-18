@@ -11,56 +11,56 @@ export function Footer() {
   if (pathname.startsWith("/admin")) return null;
 
   return (
-    <footer className="mt-auto bg-[#111] text-[#f6f3ee]">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 md:grid-cols-4 md:px-8">
+    <footer className="mt-auto border-t border-[var(--line)] bg-white text-[#0b0b0b]">
+      <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-4 md:px-8">
         <div>
-          <p className="font-serif text-4xl tracking-[0.2em]">VOSKE</p>
-          <p className="mt-1 text-xs tracking-[0.28em] text-white/40">ՈՍԿԵ</p>
-          <p className="mt-4 max-w-xs text-sm leading-7 text-white/70">{t("footer.blurb")}</p>
-          <div className="mt-5">
+          <p className="font-serif text-3xl tracking-[0.28em]">VOSKE</p>
+          <p className="mt-1 text-[10px] tracking-[0.4em] text-[var(--ink-soft)]">ՈՍԿԵ</p>
+          <p className="mt-5 max-w-xs text-sm leading-7 text-[var(--ink-soft)]">{t("footer.blurb")}</p>
+          <div className="mt-6">
             <LanguageSwitch />
           </div>
         </div>
         <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-white/40">{t("nav.catalog")}</p>
-          <div className="flex flex-col gap-2 text-sm text-white/75">
+          <p className="kicker mb-5">{t("nav.catalog")}</p>
+          <div className="flex flex-col gap-2.5 text-sm text-[var(--ink-soft)]">
             {CATEGORIES.map((cat) => (
-              <Link key={cat.id} href={`/catalog?category=${cat.id}`} className="hover:text-white">
+              <Link key={cat.id} href={`/catalog?category=${cat.id}`} className="hover:text-[#0b0b0b]">
                 {t(`cat.${cat.id}`)}
               </Link>
             ))}
           </div>
         </div>
         <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-white/40">{t("footer.house")}</p>
-          <div className="flex flex-col gap-2 text-sm text-white/75">
-            <Link href="/about">{t("footer.about")}</Link>
-            <Link href="/gold">{t("footer.gold")}</Link>
-            <Link href="/delivery">{t("footer.delivery")}</Link>
-            <Link href="/contacts">{t("footer.contacts")}</Link>
-            <Link href="/admin">{t("footer.admin")}</Link>
+          <p className="kicker mb-5">{t("footer.house")}</p>
+          <div className="flex flex-col gap-2.5 text-sm text-[var(--ink-soft)]">
+            <Link href="/about" className="hover:text-[#0b0b0b]">{t("footer.about")}</Link>
+            <Link href="/gold" className="hover:text-[#0b0b0b]">{t("footer.gold")}</Link>
+            <Link href="/delivery" className="hover:text-[#0b0b0b]">{t("footer.delivery")}</Link>
+            <Link href="/contacts" className="hover:text-[#0b0b0b]">{t("footer.contacts")}</Link>
+            <Link href="/admin" className="hover:text-[#0b0b0b]">{t("footer.admin")}</Link>
           </div>
         </div>
         <div>
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.16em] text-white/40">{t("footer.connect")}</p>
-          <p className="text-sm leading-7 text-white/75">
+          <p className="kicker mb-5">{t("footer.connect")}</p>
+          <p className="text-sm leading-7 text-[var(--ink-soft)]">
             {t("footer.tg")}
             <br />
-            <a className="text-[var(--gold-bright)]" href={SITE.telegramUrl} target="_blank" rel="noreferrer">
+            <a className="text-[#0b0b0b] underline underline-offset-4" href={SITE.telegramUrl} target="_blank" rel="noreferrer">
               @{SITE.telegram}
             </a>
           </p>
-          <p className="mt-4 text-sm leading-7 text-white/75">
+          <p className="mt-5 text-sm leading-7 text-[var(--ink-soft)]">
             {t("footer.track")}
             <br />
-            <a className="text-[var(--gold-bright)]" href={`tel:${SITE.trackingPhone}`}>
+            <a className="text-[#0b0b0b]" href={`tel:${SITE.trackingPhone}`}>
               {SITE.trackingPhoneDisplay}
             </a>
           </p>
-          <p className="mt-4 text-sm text-white/40">{t("footer.cities")}</p>
+          <p className="mt-5 text-sm text-[var(--ink-soft)]">{t("footer.cities")}</p>
         </div>
       </div>
-      <div className="border-t border-white/10 px-4 py-4 text-center text-[11px] text-white/35">
+      <div className="border-t border-[var(--line)] px-4 py-4 text-center text-[11px] text-[var(--ink-soft)]">
         {t("footer.copy", { year: new Date().getFullYear() })}
       </div>
     </footer>

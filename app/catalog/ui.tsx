@@ -59,8 +59,8 @@ export default function CatalogPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("catalog.kicker")}</p>
-      <h1 className="font-serif text-5xl">{t("catalog.title")}</h1>
+      <p className="kicker">{t("catalog.kicker")}</p>
+      <h1 className="font-serif mt-2 text-5xl">{t("catalog.title")}</h1>
       <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">{t("catalog.lead")}</p>
 
       <div className="mt-8 grid gap-3 md:grid-cols-4 lg:grid-cols-7">
@@ -111,7 +111,7 @@ export default function CatalogPage() {
       <p className="mt-6 text-sm text-[var(--ink-soft)]">
         {loaded ? t("catalog.count", { n: filtered.length }) : t("catalog.loading")}
       </p>
-      <div className="mt-6 grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
+      <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
         {filtered.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

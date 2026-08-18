@@ -51,7 +51,7 @@ export default function ProductPage() {
         <Link href="/catalog">{t("nav.catalog")}</Link> / {name}
       </p>
       <div className="mt-6 grid gap-10 lg:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-[32px] bg-[#efe8dc]">
+        <div className="relative aspect-square overflow-hidden bg-[var(--muted)]">
           <Image src={product.images[0] || "/images/voske-logo.jpg"} alt={name} fill className="object-cover" priority />
         </div>
         <div>
@@ -65,7 +65,7 @@ export default function ProductPage() {
           <div className="mt-6 flex items-end gap-3">
             <span className="text-3xl font-semibold">{formatPrice(unit)}</span>
             {was ? <span className="text-lg line-through opacity-40">{formatPrice(was)}</span> : null}
-            {sale > 0 && <span className="rounded-full bg-[#111] px-2.5 py-1 text-xs text-white">−{sale}%</span>}
+            {sale > 0 && <span className="bg-[#0b0b0b] px-2 py-1 text-xs text-white">−{sale}%</span>}
           </div>
           {size && needsSize && (
             <p className="mt-2 text-sm text-[var(--ink-soft)]">{t("product.sizePrice", { size })}</p>
@@ -91,7 +91,7 @@ export default function ProductPage() {
                     <button
                       key={s}
                       onClick={() => setSize(s)}
-                      className={`min-w-16 rounded-2xl px-3 py-2 text-left ${size === s ? "bg-[#111] text-white" : "bg-white"}`}
+                      className={`min-w-16 border px-3 py-2 text-left ${size === s ? "border-[#0b0b0b] bg-[#0b0b0b] text-white" : "border-[var(--line)] bg-white"}`}
                     >
                       <span className="block text-sm font-semibold">{s}</span>
                       <span className={`block text-[11px] ${size === s ? "text-white/70" : "text-[var(--ink-soft)]"}`}>
@@ -105,7 +105,7 @@ export default function ProductPage() {
           )}
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <div className="flex rounded-full bg-white">
+            <div className="flex border border-[var(--line)] bg-white">
               <button className="px-4 py-3" onClick={() => setQty(Math.max(1, qty - 1))}>−</button>
               <span className="px-2 py-3">{qty}</span>
               <button className="px-4 py-3" onClick={() => setQty(qty + 1)}>+</button>
@@ -117,7 +117,7 @@ export default function ProductPage() {
             >
               {t("product.add")} · {formatPrice(unit * qty)}
             </button>
-            <button onClick={() => toggleFavorite(product.id)} className="rounded-full bg-white p-3" aria-label={t("nav.favorites")}>
+            <button onClick={() => toggleFavorite(product.id)} className="border border-[var(--line)] bg-white p-3" aria-label={t("nav.favorites")}>
               <IconHeart filled={loved} />
             </button>
           </div>
@@ -135,7 +135,7 @@ export default function ProductPage() {
           <h2 className="font-serif text-3xl">{t("product.reviews", { rating: product.rating })}</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {product.reviews.map((review, index) => (
-              <blockquote key={review.author + review.date} className="rounded-[24px] bg-white p-6">
+              <blockquote key={review.author + review.date} className="border border-[var(--line)] bg-white p-6">
                 <p className="text-sm font-medium">{review.author} · {review.city}</p>
                 <p className="mt-3 leading-7">{productReviewText(product, review, index, locale)}</p>
                 <p className="mt-3 text-xs opacity-50">{review.date} · {review.rating}/5</p>
@@ -148,7 +148,7 @@ export default function ProductPage() {
       {related.length > 0 && (
         <section className="mt-16">
           <h2 className="font-serif text-3xl">{t("product.related")}</h2>
-          <div className="mt-6 grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
+          <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
             {related.map((item) => (
               <ProductCard key={item.id} product={item} />
             ))}

@@ -26,7 +26,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="product-card group relative flex flex-col">
-      <Link href={`/product/${product.slug}`} className="relative overflow-hidden rounded-[28px] bg-[#efe8dc]">
+      <Link href={`/product/${product.slug}`} className="relative overflow-hidden bg-[var(--muted)]">
         <div className="relative aspect-[4/5]">
           <Image
             src={product.images[0] || "/images/voske-logo.jpg"}
@@ -38,17 +38,17 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
         <div className="absolute left-3 top-3 flex flex-col gap-1">
           {product.isHit && (
-            <span className="rounded-full bg-[#111] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
+            <span className="bg-[#0b0b0b] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
               {t("badge.hit")}
             </span>
           )}
           {product.isNew && (
-            <span className="rounded-full bg-[var(--pomegranate)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
+            <span className="bg-white px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#0b0b0b]">
               {t("badge.new")}
             </span>
           )}
           {sale > 0 && (
-            <span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-semibold text-[#111]">−{sale}%</span>
+            <span className="bg-white/90 px-2 py-1 text-[10px] font-semibold text-[#0b0b0b]">−{sale}%</span>
           )}
         </div>
         <button
@@ -57,17 +57,17 @@ export function ProductCard({ product }: { product: Product }) {
             e.preventDefault();
             toggleFavorite(product.id);
           }}
-          className="absolute right-3 top-3 rounded-full bg-white/90 p-2 opacity-100 shadow-sm transition md:opacity-0 md:group-hover:opacity-100"
+          className="absolute right-3 top-3 bg-white/90 p-2 opacity-100 transition md:opacity-0 md:group-hover:opacity-100"
           aria-label={t("nav.favorites")}
         >
           <IconHeart filled={loved} />
         </button>
       </Link>
       <div className="flex flex-1 flex-col pt-4">
-        <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-[var(--ink-soft)]">
-          {t(`metal.${product.metal}`)} · {product.purity} · {t("card.weight", { weight: product.weight })}
+        <p className="text-[11px] uppercase tracking-[0.12em] text-[var(--ink-soft)]">
+          {t(`metal.${product.metal}`)} · {product.purity}
         </p>
-        <Link href={`/product/${product.slug}`} className="mt-1 text-[1.05rem] font-medium leading-snug">
+        <Link href={`/product/${product.slug}`} className="mt-1 text-[0.98rem] font-medium leading-snug">
           {name}
         </Link>
         <p className="mt-1 text-xs text-[var(--ink-soft)]">
@@ -75,7 +75,7 @@ export function ProductCard({ product }: { product: Product }) {
           {colKey ? ` · ${t(`col.${colKey}`)}` : ""}
         </p>
         <div className="mt-auto flex items-end gap-2 pt-3">
-          <span className="text-lg font-semibold">
+          <span className="text-base font-medium">
             {from ? t("product.from", { price: formatPrice(unit) }) : formatPrice(unit)}
           </span>
           {was ? <span className="text-sm text-[var(--ink-soft)] line-through">{formatPrice(was)}</span> : null}

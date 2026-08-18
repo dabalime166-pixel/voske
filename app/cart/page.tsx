@@ -33,7 +33,7 @@ export default function CartPage() {
               const grams = weightForSize(product, item.size);
               return (
                 <div key={product.id + (item.size || "")} className="flex gap-4 border-b border-[var(--line)] pb-6">
-                  <div className="relative h-28 w-24 overflow-hidden rounded-2xl bg-[#efe8dc]">
+                  <div className="relative h-28 w-24 overflow-hidden bg-[var(--muted)]">
                     <Image src={product.images[0]} alt={productName(product, locale)} fill className="object-cover" />
                   </div>
                   <div className="flex-1">
@@ -70,7 +70,7 @@ export default function CartPage() {
               );
             })}
           </div>
-          <aside className="h-fit rounded-[28px] bg-white p-6">
+          <aside className="h-fit border border-[var(--line)] bg-white p-6">
             <p className="flex justify-between">
               <span>{t("cart.sum")}</span>
               <span className="font-semibold">{formatPrice(subtotal)}</span>

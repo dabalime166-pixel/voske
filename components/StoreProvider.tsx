@@ -168,7 +168,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((item) => (
           <div
             key={item.id}
-            className="pointer-events-auto rounded-full bg-[#111] px-4 py-2 text-sm text-white shadow-xl"
+            className="pointer-events-auto bg-[#0b0b0b] px-4 py-2 text-sm text-white"
           >
             {item.text}
           </div>

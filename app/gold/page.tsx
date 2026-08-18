@@ -46,8 +46,8 @@ export default function GoldPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 md:px-8">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("gold.kicker")}</p>
-      <h1 className="font-serif text-5xl">{t("gold.title")}</h1>
+      <p className="kicker">{t("gold.kicker")}</p>
+      <h1 className="font-serif mt-2 text-5xl">{t("gold.title")}</h1>
       <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">{t("gold.lead")}</p>
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -67,22 +67,22 @@ export default function GoldPage() {
       {gold && (
         <>
           <div className="mt-12 grid gap-4 md:grid-cols-3">
-            <div className="rounded-[28px] bg-[#111] p-6 text-white">
+            <div className="bg-[#0b0b0b] p-6 text-white">
               <p className="text-[11px] uppercase tracking-[0.16em] text-white/50">XAU / USD</p>
               <p className="mt-2 text-4xl font-semibold">{formatUsd(gold.xauUsdPerOz)}</p>
               <p className="mt-2 text-sm text-white/50">{t("gold.oz")}</p>
             </div>
-            <div className="rounded-[28px] bg-white p-6">
+            <div className="border border-[var(--line)] bg-white p-6">
               <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">USD / RUB</p>
               <p className="mt-2 text-4xl font-semibold">{formatNumber(gold.usdRub, 2)}</p>
             </div>
-            <div className="rounded-[28px] bg-white p-6">
+            <div className="border border-[var(--line)] bg-white p-6">
               <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">USD / AMD</p>
               <p className="mt-2 text-4xl font-semibold">{formatNumber(gold.usdAmd, 2)}</p>
             </div>
           </div>
 
-          <div className="mt-10 overflow-x-auto rounded-[28px] bg-white px-6">
+          <div className="mt-10 overflow-x-auto border border-[var(--line)] bg-white px-6">
             <table className="w-full min-w-[640px] text-left">
               <thead className="text-[11px] uppercase tracking-[0.14em] text-[var(--ink-soft)]">
                 <tr>
@@ -105,7 +105,7 @@ export default function GoldPage() {
             </table>
           </div>
 
-          <section className="mt-12 rounded-[32px] bg-white p-8">
+          <section className="mt-12 border border-[var(--line)] bg-white p-8">
             <h2 className="font-serif text-3xl">{t("gold.calc")}</h2>
             <p className="mt-2 text-sm text-[var(--ink-soft)]">{t("gold.calcLead")}</p>
             <div className="mt-6 grid gap-4 md:grid-cols-3">

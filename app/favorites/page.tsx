@@ -20,7 +20,7 @@ export default function FavoritesPage() {
           </Link>
         </p>
       ) : (
-        <div className="mt-8 grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
+        <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
           {list.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

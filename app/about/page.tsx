@@ -12,7 +12,7 @@ export default function AboutPage() {
         <Image src="/images/voske-salon.jpg" alt="" fill className="object-cover" />
         <div className="absolute inset-0 bg-black/45" />
         <div className="relative z-10 mx-auto flex min-h-[46vh] max-w-5xl flex-col justify-end px-4 pb-12 md:px-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/60">{t("about.kicker")}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/55">{t("about.kicker")}</p>
           <h1 className="font-serif text-5xl text-white md:text-6xl">{t("about.title")}</h1>
         </div>
       </section>
