@@ -20,9 +20,12 @@ export async function POST(request: Request) {
   }
   const ext = file.name.split(".").pop()?.toLowerCase() || "png";
   const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-  const dir = path.join(process.cwd(), "public", "uploads");
+  const onVercel = Boolean(process.env.VERCEL);
+  const dir = onVercel
+    ? path.join("/tmp", "voske-uploads")
+    : path.join(process.cwd(), "public", "uploads");
   await fs.mkdir(dir, { recursive: true });
   const buffer = Buffer.from(await file.arrayBuffer());
   await fs.writeFile(path.join(dir, name), buffer);
-  return NextResponse.json({ url: `/uploads/${name}` });
+  return NextResponse.json({ url: onVercel ? `/api/uploads/${name}` : `/uploads/${name}` });
 }

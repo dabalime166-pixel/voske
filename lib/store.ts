@@ -4,7 +4,9 @@ import type { GoldSnapshot, Order, Product, ProductInput } from "./types";
 import { seedProducts } from "./seed-products";
 import { SITE } from "./constants";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = process.env.VERCEL
+  ? path.join("/tmp", "voske-data")
+  : path.join(process.cwd(), "data");
 const PRODUCTS_FILE = path.join(DATA_DIR, "products.json");
 const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 const GOLD_FILE = path.join(DATA_DIR, "gold.json");
@@ -32,10 +34,14 @@ async function readJson<T>(file: string, fallback: T): Promise<T> {
 }
 
 async function writeJson(file: string, data: unknown) {
-  await ensureDir();
-  const tmp = `${file}.tmp`;
-  await fs.writeFile(tmp, JSON.stringify(data, null, 2), "utf8");
-  await fs.rename(tmp, file);
+  try {
+    await ensureDir();
+    const tmp = `${file}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify(data, null, 2), "utf8");
+    await fs.rename(tmp, file);
+  } catch {
+    /* On serverless, keep the in-memory cache if disk write fails. */
+  }
 }
 
 function withLock<T>(fn: () => Promise<T>) {
