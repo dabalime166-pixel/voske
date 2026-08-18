@@ -4,74 +4,62 @@ import Image from "next/image";
 import Link from "next/link";
 import { CATEGORIES, SITE } from "@/lib/constants";
 import { formatRub } from "@/lib/format";
-import { Ornament } from "@/components/Icons";
 import { ProductCard } from "@/components/ProductCard";
+import { useI18n } from "@/components/I18nProvider";
 import { useStore } from "@/components/StoreProvider";
 
 export default function HomePage() {
+  const { t } = useI18n();
   const { products, loaded } = useStore();
   const hits = products.filter((p) => p.isHit).slice(0, 8);
   const armenian = products.filter((p) => p.origin === "armenia").slice(0, 4);
   const news = products.filter((p) => p.isNew).slice(0, 4);
+  const minHit = loaded && hits.length ? formatRub(Math.min(...hits.map((p) => p.price))) : "9 800 ₽";
 
   return (
     <div>
-      <section className="relative min-h-[88vh] overflow-hidden">
-        <Image src="/images/voske-hero.jpg" alt="VOSKE gold" fill priority className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
-        <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-4 pb-20 pt-32 md:px-8">
-          <p className="text-xs uppercase tracking-[0.42em] text-[var(--gold-bright)]">{SITE.nameHy} · GOLD HOUSE</p>
-          <h1 className="font-serif mt-4 max-w-3xl text-5xl leading-[0.95] text-[var(--cream)] md:text-7xl">
-            Золото, которое помнит Ереван и светит в Москве
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--cream)]/80">
-            Дом VOSKE собрал эстетику лучших онлайн-витрин — 585*Золотой, SOKOLOV, МЮЗ, EFREMOV, NEWGOLD, SUNLIGHT — и армянскую филигрань в одном салоне.
-          </p>
-          <div className="mt-10 flex flex-wrap gap-4">
-            <Link href="/catalog" className="bg-[var(--gold)] px-8 py-3 text-sm uppercase tracking-[0.2em] text-[var(--ink)]">
-              Смотреть витрину
+      <section className="relative min-h-[86vh] overflow-hidden">
+        <Image src="/images/voske-hero.jpg" alt="VOSKE" fill priority className="object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" />
+        <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-7xl flex-col justify-end px-4 pb-16 pt-28 md:px-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/70">{t("hero.kicker")}</p>
+          <h1 className="font-serif mt-4 max-w-3xl text-5xl leading-[0.92] text-white md:text-7xl">{t("hero.title")}</h1>
+          <p className="mt-5 max-w-xl text-base leading-7 text-white/75 md:text-lg">{t("hero.lead")}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/catalog" className="btn btn-gold">
+              {t("hero.shop")}
             </Link>
-            <Link href="/gold" className="border border-[var(--gold)] px-8 py-3 text-sm uppercase tracking-[0.2em] text-[var(--cream)]">
-              Курс золота
+            <Link href="/gold" className="btn btn-ghost">
+              {t("hero.gold")}
             </Link>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold-deep)]">Категории</p>
-            <h2 className="font-serif text-4xl">Витрина дома</h2>
-          </div>
-          <Ornament className="hidden h-8 w-48 text-[var(--gold)] md:block" />
-        </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-9">
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("home.categories")}</p>
+        <h2 className="font-serif mt-1 text-4xl">{t("home.vitrine")}</h2>
+        <div className="mt-8 flex gap-2 overflow-x-auto pb-2 md:flex-wrap">
           {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/catalog?category=${cat.id}`}
-              className="panel rounded-xl px-3 py-5 text-center transition hover:-translate-y-1"
-            >
-              <span className="font-serif block text-lg">{cat.label}</span>
-              <span className="text-[10px] tracking-[0.16em] text-[var(--gold-deep)]">{cat.labelHy}</span>
+            <Link key={cat.id} href={`/catalog?category=${cat.id}`} className="chip shrink-0">
+              {t(`cat.${cat.id}`)}
             </Link>
           ))}
         </div>
       </section>
 
-      <section className="bg-[#efe6d4]/50 py-20">
+      <section className="bg-white py-16">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <div className="mb-10 flex items-end justify-between">
+          <div className="mb-8 flex items-end justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold-deep)]">Хиты</p>
-              <h2 className="font-serif text-4xl">То, что разбирают первыми</h2>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("home.hits")}</p>
+              <h2 className="font-serif text-4xl">{t("home.hitsTitle")}</h2>
             </div>
-            <Link href="/catalog?hit=1" className="text-sm uppercase tracking-[0.16em] underline decoration-[var(--gold)]">
-              Все хиты
+            <Link href="/catalog?hit=1" className="text-sm font-medium underline underline-offset-4">
+              {t("home.allHits")}
             </Link>
           </div>
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
             {(loaded ? hits : []).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -81,63 +69,59 @@ export default function HomePage() {
 
       <section className="grid md:grid-cols-2">
         <div className="relative min-h-[420px]">
-          <Image src="/images/voske-heritage.jpg" alt="Армянское наследие" fill className="object-cover" />
+          <Image src="/images/voske-heritage.jpg" alt="" fill className="object-cover" />
         </div>
-        <div className="flex flex-col justify-center bg-[var(--ink)] px-8 py-16 text-[var(--cream)] md:px-16">
-          <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold)]">Армянское наследие</p>
-          <h2 className="font-serif mt-3 text-5xl">Нар, хачкар, Арарат</h2>
-          <p className="mt-5 max-w-md text-lg leading-8 text-[var(--cream)]/75">
-            Гранат как дом, крест как молитва, горы как память. Коллекция, которой нет у массовых российских сетей — и которая звучит по-родному в Ереване.
-          </p>
-          <Link href="/catalog?origin=armenia" className="mt-8 w-fit border border-[var(--gold)] px-6 py-3 text-sm uppercase tracking-[0.18em]">
-            Открыть коллекцию
+        <div className="flex flex-col justify-center bg-[#111] px-8 py-16 text-white md:px-16">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">{t("home.heritage")}</p>
+          <h2 className="font-serif mt-3 text-5xl">{t("home.heritageTitle")}</h2>
+          <p className="mt-5 max-w-md text-lg leading-8 text-white/70">{t("home.heritageLead")}</p>
+          <Link href="/catalog?origin=armenia" className="btn btn-ghost mt-8 w-fit">
+            {t("home.openCollection")}
           </Link>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-        <div className="mb-10">
-          <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold-deep)]">Новинки</p>
-          <h2 className="font-serif text-4xl">Только с верстака</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
-          {(loaded ? news.length ? news : products.slice(0, 4) : []).map((product) => (
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("home.news")}</p>
+        <h2 className="font-serif text-4xl">{t("home.newsTitle")}</h2>
+        <div className="mt-8 grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
+          {(loaded ? (news.length ? news : products.slice(0, 4)) : []).map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-10 px-4 pb-20 md:grid-cols-3 md:px-8">
+      <section className="mx-auto grid max-w-7xl gap-4 px-4 pb-16 md:grid-cols-3 md:px-8">
         {[
-          { t: "Честный металл", d: "На карточке — проба, вес в граммах и цвет золота. Курс на отдельной странице не прыгает сам: только когда вы нажмёте «Обновить»." },
-          { t: "Два мира", d: "Русские салоны научили нас фильтрам, примерке и хитам. Армянские дворы — филиграни, гранату и кресту. VOSKE держит оба языка." },
-          { t: "Живой заказ", d: `После оплаты в админку приходит полное уведомление. Вам — номер ${SITE.trackingPhoneDisplay} и Telegram @${SITE.telegram}.` },
-        ].map((item) => (
-          <div key={item.t} className="panel rounded-2xl p-8">
-            <h3 className="font-serif text-2xl">{item.t}</h3>
-            <p className="mt-3 leading-7 text-[var(--ink-soft)]">{item.d}</p>
+          ["home.feature1", "home.feature1d"],
+          ["home.feature2", "home.feature2d"],
+          ["home.feature3", "home.feature3d"],
+        ].map(([title, body]) => (
+          <div key={title} className="rounded-[28px] bg-white p-8">
+            <h3 className="text-xl font-semibold">{t(title)}</h3>
+            <p className="mt-3 leading-7 text-[var(--ink-soft)]">
+              {t(body, { phone: SITE.trackingPhoneDisplay, telegram: SITE.telegram })}
+            </p>
           </div>
         ))}
       </section>
 
       <section className="relative overflow-hidden">
-        <Image src="/images/voske-salon.jpg" alt="Салон VOSKE" fill className="object-cover" />
-        <div className="relative bg-black/55 px-4 py-24 text-center text-[var(--cream)]">
-          <p className="text-xs uppercase tracking-[0.32em] text-[var(--gold-bright)]">Приглашение</p>
-          <h2 className="font-serif mx-auto mt-3 max-w-2xl text-5xl">Примерьте золото, как в салоне на Северном проспекте и на Тверской</h2>
-          <p className="mx-auto mt-5 max-w-lg opacity-80">
-            Средний чек хитов — от {loaded && hits[0] ? formatRub(Math.min(...hits.map((p) => p.price))) : "9 800 ₽"}
-          </p>
-          <Link href="/contacts" className="mt-8 inline-block bg-[var(--gold)] px-8 py-3 text-sm uppercase tracking-[0.2em] text-[var(--ink)]">
-            Связаться с домом
+        <Image src="/images/voske-salon.jpg" alt="" fill className="object-cover" />
+        <div className="relative bg-black/50 px-4 py-24 text-center text-white">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/60">{t("home.invite")}</p>
+          <h2 className="font-serif mx-auto mt-3 max-w-2xl text-4xl md:text-5xl">{t("home.inviteTitle")}</h2>
+          <p className="mx-auto mt-5 max-w-lg text-white/75">{t("home.from", { price: minHit })}</p>
+          <Link href="/contacts" className="btn btn-gold mt-8 inline-flex">
+            {t("home.contact")}
           </Link>
         </div>
       </section>
 
       {armenian.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-          <h2 className="font-serif mb-8 text-4xl">Из армянских мастерских</h2>
-          <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
+        <section className="mx-auto max-w-7xl px-4 py-16 md:px-8">
+          <h2 className="font-serif mb-8 text-4xl">{t("home.armenianAtelier")}</h2>
+          <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
             {armenian.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

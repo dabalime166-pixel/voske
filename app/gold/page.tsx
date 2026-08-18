@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { formatAmd, formatDateTime, formatNumber, formatRub, formatUsd } from "@/lib/format";
 import type { GoldSnapshot } from "@/lib/types";
+import { useI18n } from "@/components/I18nProvider";
 
 export default function GoldPage() {
+  const { t, dateLocale } = useI18n();
   const [gold, setGold] = useState<GoldSnapshot | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ export default function GoldPage() {
     const data = await res.json();
     setLoading(false);
     if (!res.ok) {
-      setError(data.error || "Не удалось обновить курс");
+      setError(data.error || t("gold.error"));
       return;
     }
     setGold(data);
@@ -38,35 +40,25 @@ export default function GoldPage() {
     if (!gold) return null;
     const grams = Number(weight.replace(",", ".")) || 0;
     const gram = gold.perGram[purity];
-    return {
-      rub: gram.rub * grams,
-      amd: gram.amd * grams,
-      usd: gram.usd * grams,
-    };
+    return { rub: gram.rub * grams, amd: gram.amd * grams, usd: gram.usd * grams };
   }, [gold, weight, purity]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 md:px-8">
-      <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold-deep)]">Металл</p>
-      <h1 className="font-serif text-5xl">Курс золота</h1>
-      <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">
-        Страница не обновляется сама. Цифры замирают до тех пор, пока вы не нажмёте кнопку — как котировка в кабинете пробирного надзора, а не тикер брокера.
-      </p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("gold.kicker")}</p>
+      <h1 className="font-serif text-5xl">{t("gold.title")}</h1>
+      <p className="mt-4 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">{t("gold.lead")}</p>
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
-        <button
-          onClick={refresh}
-          disabled={loading}
-          className="bg-[var(--ink)] px-8 py-3 text-sm uppercase tracking-[0.2em] text-[var(--cream)] disabled:opacity-50"
-        >
-          {loading ? "Запрашиваем рынок..." : "Обновить курс"}
+        <button onClick={refresh} disabled={loading} className="btn btn-dark disabled:opacity-50">
+          {loading ? t("gold.loading") : t("gold.refresh")}
         </button>
         {gold ? (
           <p className="text-sm text-[var(--ink-soft)]">
-            Последнее обновление: {formatDateTime(gold.updatedAt)} · {gold.source}
+            {t("gold.last", { time: formatDateTime(gold.updatedAt, dateLocale), source: gold.source })}
           </p>
         ) : (
-          <p className="text-sm text-[var(--ink-soft)]">Курса ещё нет — нажмите «Обновить курс».</p>
+          <p className="text-sm text-[var(--ink-soft)]">{t("gold.none")}</p>
         )}
       </div>
       {error && <p className="mt-3 text-[var(--pomegranate)]">{error}</p>}
@@ -74,35 +66,35 @@ export default function GoldPage() {
       {gold && (
         <>
           <div className="mt-12 grid gap-4 md:grid-cols-3">
-            <div className="dark-panel rounded-2xl p-6">
-              <p className="text-xs uppercase tracking-[0.2em] text-[var(--gold)]">XAU / USD</p>
-              <p className="font-serif mt-2 text-4xl">{formatUsd(gold.xauUsdPerOz)}</p>
-              <p className="mt-2 text-sm opacity-70">за тройскую унцию</p>
+            <div className="rounded-[28px] bg-[#111] p-6 text-white">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-white/50">XAU / USD</p>
+              <p className="mt-2 text-4xl font-semibold">{formatUsd(gold.xauUsdPerOz)}</p>
+              <p className="mt-2 text-sm text-white/50">{t("gold.oz")}</p>
             </div>
-            <div className="panel rounded-2xl p-6">
-              <p className="text-xs uppercase tracking-[0.2em]">USD / RUB</p>
-              <p className="font-serif mt-2 text-4xl">{formatNumber(gold.usdRub, 2)}</p>
+            <div className="rounded-[28px] bg-white p-6">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">USD / RUB</p>
+              <p className="mt-2 text-4xl font-semibold">{formatNumber(gold.usdRub, 2)}</p>
             </div>
-            <div className="panel rounded-2xl p-6">
-              <p className="text-xs uppercase tracking-[0.2em]">USD / AMD</p>
-              <p className="font-serif mt-2 text-4xl">{formatNumber(gold.usdAmd, 2)}</p>
+            <div className="rounded-[28px] bg-white p-6">
+              <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">USD / AMD</p>
+              <p className="mt-2 text-4xl font-semibold">{formatNumber(gold.usdAmd, 2)}</p>
             </div>
           </div>
 
-          <div className="mt-10 overflow-x-auto">
+          <div className="mt-10 overflow-x-auto rounded-[28px] bg-white px-6">
             <table className="w-full min-w-[640px] text-left">
-              <thead className="text-xs uppercase tracking-[0.16em] text-[var(--gold-deep)]">
+              <thead className="text-[11px] uppercase tracking-[0.14em] text-[var(--ink-soft)]">
                 <tr>
-                  <th className="py-3">Проба</th>
-                  <th>₽ / грамм</th>
-                  <th>֏ / грамм</th>
-                  <th>$ / грамм</th>
+                  <th className="py-4">{t("gold.purity")}</th>
+                  <th>₽ / g</th>
+                  <th>֏ / g</th>
+                  <th>$ / g</th>
                 </tr>
               </thead>
               <tbody>
                 {(["999", "750", "585", "375"] as const).map((key) => (
                   <tr key={key} className="border-t border-[var(--line)]">
-                    <td className="py-4 font-serif text-2xl">{key}</td>
+                    <td className="py-4 text-2xl font-semibold">{key}</td>
                     <td>{formatRub(gold.perGram[key].rub)}</td>
                     <td>{formatAmd(gold.perGram[key].amd)}</td>
                     <td>{formatUsd(gold.perGram[key].usd, 2)}</td>
@@ -112,27 +104,17 @@ export default function GoldPage() {
             </table>
           </div>
 
-          <section className="panel mt-12 rounded-3xl p-8">
-            <h2 className="font-serif text-3xl">Калькулятор лома и металла</h2>
-            <p className="mt-2 text-sm text-[var(--ink-soft)]">
-              Считаем только спот металла. Ювелирная цена VOSKE выше: работа, закрепка, камни, пробирный надзор.
-            </p>
+          <section className="mt-12 rounded-[32px] bg-white p-8">
+            <h2 className="font-serif text-3xl">{t("gold.calc")}</h2>
+            <p className="mt-2 text-sm text-[var(--ink-soft)]">{t("gold.calcLead")}</p>
             <div className="mt-6 grid gap-4 md:grid-cols-3">
               <label className="text-sm">
-                Вес, г
-                <input
-                  className="mt-1 w-full border border-[var(--line)] bg-transparent px-3 py-2"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                />
+                {t("gold.grams")}
+                <input className="field mt-1" value={weight} onChange={(e) => setWeight(e.target.value)} />
               </label>
               <label className="text-sm">
-                Проба
-                <select
-                  className="mt-1 w-full border border-[var(--line)] bg-transparent px-3 py-2"
-                  value={purity}
-                  onChange={(e) => setPurity(e.target.value as typeof purity)}
-                >
+                {t("gold.purity")}
+                <select className="field mt-1" value={purity} onChange={(e) => setPurity(e.target.value as typeof purity)}>
                   <option value="999">999</option>
                   <option value="750">750</option>
                   <option value="585">585</option>
@@ -141,8 +123,8 @@ export default function GoldPage() {
               </label>
               {calc && (
                 <div>
-                  <p className="text-sm opacity-60">Стоимость металла</p>
-                  <p className="font-serif text-3xl">{formatRub(calc.rub)}</p>
+                  <p className="text-sm opacity-60">{t("gold.metalValue")}</p>
+                  <p className="text-3xl font-semibold">{formatRub(calc.rub)}</p>
                   <p className="text-sm">{formatAmd(calc.amd)} · {formatUsd(calc.usd)}</p>
                 </div>
               )}

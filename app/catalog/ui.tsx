@@ -3,13 +3,17 @@
 import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CATEGORIES, COLLECTIONS, GENDERS, METALS, ORIGINS, PURITIES } from "@/lib/constants";
+import { COLLECTION_KEY } from "@/lib/i18n";
+import { productName } from "@/lib/product-i18n";
 import { ProductCard } from "@/components/ProductCard";
+import { useI18n } from "@/components/I18nProvider";
 import { useStore } from "@/components/StoreProvider";
 import type { Category, Gender, MetalColor, Origin, Purity } from "@/lib/types";
 
 export default function CatalogPage() {
   const params = useSearchParams();
   const router = useRouter();
+  const { t, locale } = useI18n();
   const { products, loaded } = useStore();
 
   const selected = {
@@ -42,75 +46,77 @@ export default function CatalogPage() {
     if (selected.hit) list = list.filter((p) => p.isHit);
     if (selected.q) {
       const q = selected.q.toLowerCase();
-      list = list.filter((p) => `${p.name} ${p.sku} ${p.inspiredBy} ${p.stones.join(" ")}`.toLowerCase().includes(q));
+      list = list.filter((p) => `${productName(p, locale)} ${p.sku} ${p.inspiredBy}`.toLowerCase().includes(q));
     }
     if (selected.sort === "price-asc") list.sort((a, b) => a.price - b.price);
     if (selected.sort === "price-desc") list.sort((a, b) => b.price - a.price);
     if (selected.sort === "new") list.sort((a, b) => Number(b.isNew) - Number(a.isNew));
     if (selected.sort === "hit") list.sort((a, b) => Number(b.isHit) - Number(a.isHit));
     return list;
-  }, [products, selected]);
+  }, [products, selected, locale]);
+
+  const selectClass = "field";
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-8">
-      <p className="text-xs uppercase tracking-[0.3em] text-[var(--gold-deep)]">Каталог</p>
-      <h1 className="font-serif text-5xl">Золотая витрина</h1>
-      <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
-        Фильтры как у SUNLIGHT и SOKOLOV: металл, проба, для кого, происхождение. Демо-модели собраны по эстетике топовых домов России и Армении.
-      </p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--ink-soft)]">{t("catalog.kicker")}</p>
+      <h1 className="font-serif text-5xl">{t("catalog.title")}</h1>
+      <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">{t("catalog.lead")}</p>
 
       <div className="mt-8 grid gap-3 md:grid-cols-4 lg:grid-cols-7">
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.category || ""} onChange={(e) => setParam("category", e.target.value)}>
-          <option value="">Все категории</option>
+        <select className={selectClass} value={selected.category || ""} onChange={(e) => setParam("category", e.target.value)}>
+          <option value="">{t("catalog.allCat")}</option>
           {CATEGORIES.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
+            <option key={c.id} value={c.id}>{t(`cat.${c.id}`)}</option>
           ))}
         </select>
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.metal || ""} onChange={(e) => setParam("metal", e.target.value)}>
-          <option value="">Цвет золота</option>
+        <select className={selectClass} value={selected.metal || ""} onChange={(e) => setParam("metal", e.target.value)}>
+          <option value="">{t("catalog.metal")}</option>
           {METALS.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
+            <option key={c.id} value={c.id}>{t(`metal.${c.id}`)}</option>
           ))}
         </select>
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.purity || ""} onChange={(e) => setParam("purity", e.target.value)}>
-          <option value="">Проба</option>
+        <select className={selectClass} value={selected.purity || ""} onChange={(e) => setParam("purity", e.target.value)}>
+          <option value="">{t("catalog.purity")}</option>
           {PURITIES.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </select>
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.gender || ""} onChange={(e) => setParam("gender", e.target.value)}>
-          <option value="">Для кого</option>
+        <select className={selectClass} value={selected.gender || ""} onChange={(e) => setParam("gender", e.target.value)}>
+          <option value="">{t("catalog.who")}</option>
           {GENDERS.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
+            <option key={c.id} value={c.id}>{t(`gender.${c.id}`)}</option>
           ))}
         </select>
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.origin || ""} onChange={(e) => setParam("origin", e.target.value)}>
-          <option value="">Страна</option>
+        <select className={selectClass} value={selected.origin || ""} onChange={(e) => setParam("origin", e.target.value)}>
+          <option value="">{t("catalog.country")}</option>
           {ORIGINS.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
+            <option key={c.id} value={c.id}>{t(`origin.${c.id}`)}</option>
           ))}
         </select>
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.collection || ""} onChange={(e) => setParam("collection", e.target.value)}>
-          <option value="">Коллекция</option>
+        <select className={selectClass} value={selected.collection || ""} onChange={(e) => setParam("collection", e.target.value)}>
+          <option value="">{t("catalog.collection")}</option>
           {COLLECTIONS.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>{t(`col.${COLLECTION_KEY[c] || "classic"}`)}</option>
           ))}
         </select>
-        <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={selected.sort} onChange={(e) => setParam("sort", e.target.value)}>
-          <option value="hit">Сначала хиты</option>
-          <option value="new">Новинки</option>
-          <option value="price-asc">Цена ↑</option>
-          <option value="price-desc">Цена ↓</option>
+        <select className={selectClass} value={selected.sort} onChange={(e) => setParam("sort", e.target.value)}>
+          <option value="hit">{t("catalog.sortHits")}</option>
+          <option value="new">{t("catalog.sortNew")}</option>
+          <option value="price-asc">{t("catalog.sortAsc")}</option>
+          <option value="price-desc">{t("catalog.sortDesc")}</option>
         </select>
       </div>
 
-      <p className="mt-6 text-sm text-[var(--ink-soft)]">{loaded ? `${filtered.length} украшений` : "Загрузка витрины..."}</p>
-      <div className="mt-6 grid grid-cols-2 gap-6 lg:grid-cols-4">
+      <p className="mt-6 text-sm text-[var(--ink-soft)]">
+        {loaded ? t("catalog.count", { n: filtered.length }) : t("catalog.loading")}
+      </p>
+      <div className="mt-6 grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-7">
         {filtered.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
-      {loaded && filtered.length === 0 && <p className="py-20 text-center text-[var(--ink-soft)]">Нет изделий по этим фильтрам</p>}
+      {loaded && filtered.length === 0 && <p className="py-20 text-center text-[var(--ink-soft)]">{t("catalog.empty")}</p>}
     </div>
   );
 }

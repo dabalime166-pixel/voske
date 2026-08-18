@@ -11,7 +11,10 @@ const empty: ProductInput = {
   slug: "",
   name: "",
   nameHy: "",
+  nameEn: "",
   description: "",
+  descriptionHy: "",
+  descriptionEn: "",
   price: 0,
   oldPrice: undefined,
   category: "rings",
@@ -40,7 +43,10 @@ function toInput(product?: Product): ProductInput {
     slug: product.slug,
     name: product.name,
     nameHy: product.nameHy,
+    nameEn: product.nameEn || "",
     description: product.description,
+    descriptionHy: product.descriptionHy || "",
+    descriptionEn: product.descriptionEn || "",
     price: product.price,
     oldPrice: product.oldPrice,
     category: product.category,
@@ -121,8 +127,11 @@ export function ProductForm({ product }: { product?: Product }) {
       <Field label="Название">
         <input required value={form.name} onChange={(e) => patch("name", e.target.value)} />
       </Field>
-      <Field label="Название на армянском">
+      <Field label="Название / հայերեն">
         <input value={form.nameHy} onChange={(e) => patch("nameHy", e.target.value)} />
+      </Field>
+      <Field label="Name / English">
+        <input value={form.nameEn || ""} onChange={(e) => patch("nameEn", e.target.value)} />
       </Field>
       <Field label="Адрес страницы (slug)">
         <input value={form.slug} onChange={(e) => patch("slug", e.target.value)} placeholder="авто из названия" />
@@ -131,8 +140,16 @@ export function ProductForm({ product }: { product?: Product }) {
         <input value={form.sku} onChange={(e) => patch("sku", e.target.value)} />
       </Field>
       <label className="md:col-span-2 flex flex-col gap-1 text-sm">
-        Описание
-        <textarea className="min-h-28 border border-[var(--line)] bg-transparent px-3 py-2" value={form.description} onChange={(e) => patch("description", e.target.value)} />
+        Описание / RU
+        <textarea className="field min-h-28" value={form.description} onChange={(e) => patch("description", e.target.value)} />
+      </label>
+      <label className="flex flex-col gap-1 text-sm">
+        Նկարագրություն / HY
+        <textarea className="field min-h-28" value={form.descriptionHy || ""} onChange={(e) => patch("descriptionHy", e.target.value)} />
+      </label>
+      <label className="flex flex-col gap-1 text-sm">
+        Description / EN
+        <textarea className="field min-h-28" value={form.descriptionEn || ""} onChange={(e) => patch("descriptionEn", e.target.value)} />
       </label>
       <Field label="Цена, ₽">
         <input type="number" required value={form.price} onChange={(e) => patch("price", Number(e.target.value))} />

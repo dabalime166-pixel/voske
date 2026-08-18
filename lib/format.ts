@@ -29,8 +29,8 @@ export function formatNumber(value: number, digits = 0) {
   }).format(value);
 }
 
-export function formatDateTime(iso: string) {
-  return new Intl.DateTimeFormat("ru-RU", {
+export function formatDateTime(iso: string, locale = "ru-RU") {
+  return new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
     timeStyle: "short",
   }).format(new Date(iso));

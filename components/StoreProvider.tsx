@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { CartItem, Product } from "@/lib/types";
+import { useI18n } from "./I18nProvider";
 
 type Toast = { id: number; text: string };
 
@@ -33,6 +34,7 @@ function sameLine(a: CartItem, b: Pick<CartItem, "productId" | "size">) {
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
+  const { t } = useI18n();
   const [products, setProducts] = useState<Product[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -81,9 +83,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         next[index] = { ...next[index], quantity: next[index].quantity + item.quantity };
         return next;
       });
-      toast("Добавлено в корзину");
+      toast(t("toast.cart"));
     },
-    [toast],
+    [toast, t],
   );
 
   const setQty = useCallback((productId: string, quantity: number, size?: string) => {
@@ -104,11 +106,11 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     (productId: string) => {
       setFavorites((prev) => {
         const exists = prev.includes(productId);
-        toast(exists ? "Убрано из избранного" : "В избранном");
+        toast(exists ? t("toast.favOff") : t("toast.favOn"));
         return exists ? prev.filter((id) => id !== productId) : [...prev, productId];
       });
     },
-    [toast],
+    [toast, t],
   );
 
   const value = useMemo(
@@ -147,7 +149,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((item) => (
           <div
             key={item.id}
-            className="pointer-events-auto rounded-full border border-[var(--line)] bg-[var(--ink)] px-4 py-2 text-sm text-[var(--cream)] shadow-xl"
+            className="pointer-events-auto rounded-full bg-[#111] px-4 py-2 text-sm text-white shadow-xl"
           >
             {item.text}
           </div>

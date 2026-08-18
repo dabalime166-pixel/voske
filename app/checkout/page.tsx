@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { SITE } from "@/lib/constants";
 import { formatRub } from "@/lib/format";
+import { useI18n } from "@/components/I18nProvider";
 import { useStore } from "@/components/StoreProvider";
 
 const empty = {
@@ -19,6 +20,7 @@ const empty = {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const { cart, products, clearCart } = useStore();
   const [customer, setCustomer] = useState(empty);
   const [deliveryMethod, setDeliveryMethod] = useState<"courier" | "pickup" | "cdek">("courier");
@@ -44,7 +46,7 @@ export default function CheckoutPage() {
     const data = await res.json();
     setPending(false);
     if (!res.ok) {
-      setError(data.error || "Не удалось оформить заказ");
+      setError(data.error || t("checkout.error"));
       return;
     }
     clearCart();
@@ -52,90 +54,86 @@ export default function CheckoutPage() {
   }
 
   if (!cart.length) {
-    return <div className="px-8 py-24 text-center">Сначала положите украшение в корзину.</div>;
+    return <div className="px-8 py-24 text-center">{t("checkout.empty")}</div>;
   }
+
+  const fields = [
+    ["firstName", "checkout.firstName"],
+    ["lastName", "checkout.lastName"],
+    ["phone", "checkout.phone"],
+    ["email", "checkout.email"],
+    ["city", "checkout.city"],
+    ["address", "checkout.address"],
+  ] as const;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 md:px-8">
-      <h1 className="font-serif text-5xl">Оформление</h1>
+      <h1 className="font-serif text-5xl">{t("checkout.title")}</h1>
       <p className="mt-3 max-w-2xl text-[var(--ink-soft)]">
-        После заказа в админку VOSKE придёт уведомление со всеми данными. Вам — телефон отслеживания {SITE.trackingPhoneDisplay} и Telegram @{SITE.telegram}.
+        {t("checkout.lead", { phone: SITE.trackingPhoneDisplay, telegram: SITE.telegram })}
       </p>
       <form onSubmit={submit} className="mt-10 grid gap-10 lg:grid-cols-[1fr_300px]">
         <div className="grid gap-4 sm:grid-cols-2">
-          {(
-            [
-              ["firstName", "Имя"],
-              ["lastName", "Фамилия"],
-              ["phone", "Телефон"],
-              ["email", "Email"],
-              ["city", "Город"],
-              ["address", "Адрес"],
-            ] as const
-          ).map(([key, label]) => (
+          {fields.map(([key, label]) => (
             <label key={key} className="flex flex-col gap-1 text-sm">
-              {label}
+              {t(label)}
               <input
                 required
-                className="border border-[var(--line)] bg-transparent px-3 py-2"
+                className="field"
                 value={customer[key]}
                 onChange={(e) => setCustomer({ ...customer, [key]: e.target.value })}
               />
             </label>
           ))}
           <label className="flex flex-col gap-1 text-sm">
-            Страна
+            {t("checkout.country")}
             <select
-              className="border border-[var(--line)] bg-transparent px-3 py-2"
+              className="field"
               value={customer.country}
               onChange={(e) => setCustomer({ ...customer, country: e.target.value as "russia" | "armenia" })}
             >
-              <option value="russia">Россия</option>
-              <option value="armenia">Армения</option>
+              <option value="russia">{t("origin.russia")}</option>
+              <option value="armenia">{t("origin.armenia")}</option>
             </select>
           </label>
           <label className="sm:col-span-2 flex flex-col gap-1 text-sm">
-            Комментарий
-            <textarea
-              className="min-h-24 border border-[var(--line)] bg-transparent px-3 py-2"
-              value={customer.comment}
-              onChange={(e) => setCustomer({ ...customer, comment: e.target.value })}
-            />
+            {t("checkout.comment")}
+            <textarea className="field min-h-24" value={customer.comment} onChange={(e) => setCustomer({ ...customer, comment: e.target.value })} />
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            Доставка
-            <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={deliveryMethod} onChange={(e) => setDeliveryMethod(e.target.value as typeof deliveryMethod)}>
-              <option value="courier">Курьер</option>
-              <option value="cdek">СДЭК / почта РА</option>
-              <option value="pickup">Самовывоз</option>
+            {t("checkout.delivery")}
+            <select className="field" value={deliveryMethod} onChange={(e) => setDeliveryMethod(e.target.value as typeof deliveryMethod)}>
+              <option value="courier">{t("checkout.courier")}</option>
+              <option value="cdek">{t("checkout.cdek")}</option>
+              <option value="pickup">{t("checkout.pickup")}</option>
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            Оплата
-            <select className="border border-[var(--line)] bg-transparent px-3 py-2" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as typeof paymentMethod)}>
-              <option value="cod">При получении</option>
-              <option value="card">Карта</option>
-              <option value="transfer">Перевод</option>
+            {t("checkout.payment")}
+            <select className="field" value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value as typeof paymentMethod)}>
+              <option value="cod">{t("checkout.cod")}</option>
+              <option value="card">{t("checkout.card")}</option>
+              <option value="transfer">{t("checkout.transfer")}</option>
             </select>
           </label>
         </div>
-        <aside className="panel h-fit rounded-2xl p-6">
-          <p className="font-serif text-2xl">Итого</p>
+        <aside className="h-fit rounded-[28px] bg-white p-6">
+          <p className="text-xl font-semibold">{t("checkout.total")}</p>
           <p className="mt-4 flex justify-between text-sm">
-            <span>Товары</span>
+            <span>{t("checkout.items")}</span>
             <span>{formatRub(subtotal)}</span>
           </p>
           <p className="mt-2 flex justify-between text-sm">
-            <span>Доставка</span>
-            <span>{deliveryPrice ? formatRub(deliveryPrice) : "бесплатно"}</span>
+            <span>{t("checkout.shipCost")}</span>
+            <span>{deliveryPrice ? formatRub(deliveryPrice) : t("checkout.free")}</span>
           </p>
-          <p className="mt-4 flex justify-between text-lg">
-            <span>К оплате</span>
+          <p className="mt-4 flex justify-between text-lg font-semibold">
+            <span>{t("checkout.pay")}</span>
             <span>{formatRub(subtotal + deliveryPrice)}</span>
           </p>
           {error && <p className="mt-3 text-sm text-[var(--pomegranate)]">{error}</p>}
-          <button disabled={pending} className="mt-6 w-full bg-[var(--ink)] py-3 text-sm uppercase tracking-[0.18em] text-[var(--cream)]">
-            {pending ? "Отправляем..." : "Подтвердить заказ"}
+          <button disabled={pending} className="btn btn-dark mt-6 w-full">
+            {pending ? t("checkout.sending") : t("checkout.submit")}
           </button>
         </aside>
       </form>
