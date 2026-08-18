@@ -42,5 +42,8 @@ next-env.d.ts
 
 # local data drafts
 data/*.tmp
+data/products.json
+data/gold.json
+data/orders.json
 public/uploads/*
 !public/uploads/.gitkeep

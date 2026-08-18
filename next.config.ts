@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   images: {
     qualities: [75, 90],
   },
+  agentRules: false,
 };
 
 export default nextConfig;
