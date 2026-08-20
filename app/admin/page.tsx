@@ -23,48 +23,89 @@ export default function AdminHome() {
       .then(setStats);
   }, []);
 
-  if (!stats) return <p>Собираем стол...</p>;
+  if (!stats) {
+    return <p className="text-sm text-[var(--ink-soft)]">Собираем стол…</p>;
+  }
+
+  const cards = [
+    { label: "Витрина", value: stats.products, href: "/admin/products" },
+    { label: "Заказы", value: stats.orders, href: "/admin/orders" },
+    { label: "Новые", value: stats.unread, href: "/admin/orders" },
+    { label: "Выручка", value: formatRub(stats.revenue), href: "/admin/orders" },
+  ];
 
   return (
     <div>
-      <h1 className="font-serif text-4xl">Стол хозяина</h1>
-      <p className="mt-2 text-white/60">Новые заказы приходят сюда целиком — имя, телефон, адрес, состав корзины.</p>
-      <div className="mt-8 grid gap-4 md:grid-cols-4">
-        {[
-          ["Витрина", stats.products],
-          ["Заказы", stats.orders],
-          ["Непрочитано", stats.unread],
-          ["Выручка", formatRub(stats.revenue)],
-        ].map(([label, value]) => (
-          <div key={String(label)} className="border border-white/10 p-5">
-            <p className="text-xs uppercase tracking-[0.18em] text-[var(--gold)]">{label}</p>
-            <p className="font-serif mt-2 text-3xl">{value}</p>
-          </div>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="kicker">Админ</p>
+          <h1 className="font-serif mt-1 text-3xl sm:text-4xl">Стол</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--ink-soft)]">
+            Новые покупки приходят сюда целиком — имя, телефон, адрес и состав корзины.
+          </p>
+        </div>
+        <Link href="/admin/products/new" className="admin-btn admin-btn-primary w-full sm:w-auto">
+          + Изделие
+        </Link>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {cards.map((card) => (
+          <Link key={card.label} href={card.href} className="admin-card p-4 transition hover:border-[#0b0b0b] sm:p-5">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">{card.label}</p>
+            <p className="font-serif mt-2 text-2xl sm:text-3xl">{card.value}</p>
+          </Link>
         ))}
       </div>
+
       {stats.unread > 0 && (
-        <div className="notice-pulse mt-8 border border-[var(--gold)] bg-[var(--gold)]/10 p-5">
-          <p className="uppercase tracking-[0.18em] text-[var(--gold)]">{stats.unread} новых уведомлений о покупке</p>
-          <Link href="/admin/orders" className="mt-2 inline-block text-sm underline">
+        <div className="admin-card notice-pulse mt-6 border-[#0b0b0b] bg-white p-4 sm:p-5">
+          <p className="text-sm font-medium">{stats.unread} новых уведомлений о покупке</p>
+          <Link href="/admin/orders" className="mt-2 inline-block text-sm underline underline-offset-4">
             Открыть ленту заказов
           </Link>
         </div>
       )}
-      <h2 className="font-serif mt-12 text-2xl">Последние заказы</h2>
-      <div className="mt-4 divide-y divide-white/10 border border-white/10">
+
+      {stats.lowStock > 0 && (
+        <p className="mt-4 text-sm text-[var(--ink-soft)]">
+          Мало на складе: {stats.lowStock}{" "}
+          <Link href="/admin/products" className="underline underline-offset-4">
+            посмотреть витрину
+          </Link>
+        </p>
+      )}
+
+      <div className="mt-10 flex items-end justify-between gap-3">
+        <h2 className="font-serif text-2xl">Последние заказы</h2>
+        <Link href="/admin/orders" className="text-xs font-semibold uppercase tracking-[0.14em] underline underline-offset-4">
+          Все
+        </Link>
+      </div>
+
+      <div className="admin-card mt-4 divide-y divide-[var(--line)]">
         {stats.latestOrders.map((order) => (
-          <Link key={order.id} href={`/admin/orders/${order.id}`} className="flex items-center justify-between px-4 py-4 hover:bg-white/5">
-            <div>
-              <p>
-                {order.number} · {order.customer.firstName} {order.customer.lastName}
-                {!order.read && <span className="ml-2 text-[10px] uppercase text-[var(--gold)]">новое</span>}
+          <Link
+            key={order.id}
+            href={`/admin/orders/${order.id}`}
+            className="flex items-start justify-between gap-3 px-4 py-4 hover:bg-[var(--muted)] sm:items-center"
+          >
+            <div className="min-w-0">
+              <p className="truncate font-medium">
+                {order.number}
+                {!order.read && <span className="ml-2 text-[10px] uppercase tracking-[0.14em] text-[var(--pomegranate)]">новое</span>}
               </p>
-              <p className="text-sm text-white/50">{formatDateTime(order.createdAt)} · {order.customer.phone}</p>
+              <p className="mt-1 text-sm text-[var(--ink-soft)]">
+                {order.customer.firstName} {order.customer.lastName} · {order.customer.phone}
+              </p>
+              <p className="mt-0.5 text-xs text-[var(--ink-soft)]">{formatDateTime(order.createdAt)}</p>
             </div>
-            <span>{formatRub(order.total)}</span>
+            <span className="shrink-0 text-sm font-medium">{formatRub(order.total)}</span>
           </Link>
         ))}
-        {stats.latestOrders.length === 0 && <p className="p-6 text-white/40">Заказов ещё нет — оформите тестовую покупку на витрине.</p>}
+        {stats.latestOrders.length === 0 && (
+          <p className="p-6 text-sm text-[var(--ink-soft)]">Заказов ещё нет — оформите тестовую покупку на витрине.</p>
+        )}
       </div>
     </div>
   );

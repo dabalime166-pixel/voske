@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SITE } from "@/lib/constants";
@@ -45,57 +46,111 @@ export default function AdminOrderPage() {
     setOrder(await res.json());
   }
 
-  if (!order?.customer) return <p>Открываем уведомление...</p>;
+  if (!order?.customer) {
+    return <p className="text-sm text-[var(--ink-soft)]">Открываем уведомление…</p>;
+  }
 
   return (
-    <div className="max-w-3xl">
-      <p className="text-xs uppercase tracking-[0.2em] text-[var(--gold)]">Уведомление о покупке</p>
-      <h1 className="font-serif text-4xl">{order.number}</h1>
-      <p className="mt-2 text-white/60">{formatDateTime(order.createdAt)}</p>
+    <div className="mx-auto max-w-3xl">
+      <Link href="/admin/orders" className="text-sm text-[var(--ink-soft)] underline underline-offset-4">
+        ← К заказам
+      </Link>
+      <p className="kicker mt-4">Уведомление о покупке</p>
+      <h1 className="font-serif mt-1 text-3xl sm:text-4xl">{order.number}</h1>
+      <p className="mt-2 text-sm text-[var(--ink-soft)]">{formatDateTime(order.createdAt)}</p>
 
-      <section className="mt-8 border border-white/10 p-6">
-        <h2 className="text-xs uppercase tracking-[0.18em] text-[var(--gold)]">Покупатель</h2>
-        <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div><dt className="text-white/40">Имя</dt><dd>{order.customer.firstName} {order.customer.lastName}</dd></div>
-          <div><dt className="text-white/40">Телефон</dt><dd>{order.customer.phone}</dd></div>
-          <div><dt className="text-white/40">Email</dt><dd>{order.customer.email}</dd></div>
-          <div><dt className="text-white/40">Страна</dt><dd>{order.customer.country === "armenia" ? "Армения" : "Россия"}</dd></div>
-          <div><dt className="text-white/40">Город</dt><dd>{order.customer.city}</dd></div>
-          <div className="sm:col-span-2"><dt className="text-white/40">Адрес</dt><dd>{order.customer.address}</dd></div>
-          <div className="sm:col-span-2"><dt className="text-white/40">Комментарий</dt><dd>{order.customer.comment || "—"}</dd></div>
+      <div className="mt-6 flex flex-wrap gap-2">
+        <a href={`tel:${order.customer.phone}`} className="admin-btn admin-btn-primary">
+          Позвонить
+        </a>
+        {order.customer.email && (
+          <a href={`mailto:${order.customer.email}`} className="admin-btn admin-btn-ghost">
+            Email
+          </a>
+        )}
+        <a href={SITE.telegramUrl} target="_blank" rel="noreferrer" className="admin-btn admin-btn-ghost">
+          Telegram
+        </a>
+      </div>
+
+      <section className="admin-card mt-6 p-4 sm:p-6">
+        <h2 className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">Покупатель</h2>
+        <dl className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div>
+            <dt className="text-xs text-[var(--ink-soft)]">Имя</dt>
+            <dd className="mt-1">
+              {order.customer.firstName} {order.customer.lastName}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-[var(--ink-soft)]">Телефон</dt>
+            <dd className="mt-1">
+              <a href={`tel:${order.customer.phone}`} className="underline underline-offset-4">
+                {order.customer.phone}
+              </a>
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs text-[var(--ink-soft)]">Email</dt>
+            <dd className="mt-1 break-all">{order.customer.email || "—"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-[var(--ink-soft)]">Страна</dt>
+            <dd className="mt-1">{order.customer.country === "armenia" ? "Армения" : "Россия"}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-[var(--ink-soft)]">Город</dt>
+            <dd className="mt-1">{order.customer.city}</dd>
+          </div>
+          <div className="sm:col-span-2">
+            <dt className="text-xs text-[var(--ink-soft)]">Адрес</dt>
+            <dd className="mt-1">{order.customer.address}</dd>
+          </div>
+          <div className="sm:col-span-2">
+            <dt className="text-xs text-[var(--ink-soft)]">Комментарий</dt>
+            <dd className="mt-1">{order.customer.comment || "—"}</dd>
+          </div>
         </dl>
       </section>
 
-      <section className="mt-6 border border-white/10 p-6">
-        <h2 className="text-xs uppercase tracking-[0.18em] text-[var(--gold)]">Состав</h2>
+      <section className="admin-card mt-4 p-4 sm:p-6">
+        <h2 className="text-[11px] uppercase tracking-[0.16em] text-[var(--ink-soft)]">Состав</h2>
         <ul className="mt-4 space-y-3">
           {order.items.map((item) => (
-            <li key={item.productId + (item.size || "")} className="flex justify-between gap-4">
+            <li key={item.productId + (item.size || "")} className="flex justify-between gap-4 text-sm">
               <span>
-                {item.name} · {item.sku} {item.size ? `· ${item.size}` : ""} × {item.quantity}
+                {item.name}
+                <span className="mt-0.5 block text-xs text-[var(--ink-soft)]">
+                  {item.sku}
+                  {item.size ? ` · ${item.size}` : ""} × {item.quantity}
+                </span>
               </span>
-              <span>{formatRub(item.price * item.quantity)}</span>
+              <span className="shrink-0 font-medium">{formatRub(item.price * item.quantity)}</span>
             </li>
           ))}
         </ul>
-        <p className="mt-4 flex justify-between text-lg">
+        <p className="mt-4 flex justify-between border-t border-[var(--line)] pt-4 text-lg font-medium">
           <span>Итого</span>
           <span>{formatRub(order.total)}</span>
         </p>
-        <p className="mt-2 text-sm text-white/50">
-          Доставка: {order.deliveryMethod} · оплата: {order.paymentMethod} · отслеживание для гостя: {SITE.trackingPhoneDisplay}
+        <p className="mt-3 text-sm text-[var(--ink-soft)]">
+          Доставка: {order.deliveryMethod} · оплата: {order.paymentMethod}
+          <br />
+          Отслеживание для гостя: {SITE.trackingPhoneDisplay}
         </p>
       </section>
 
       <label className="mt-6 block text-sm">
-        Статус
+        Статус заказа
         <select
-          className="mt-2 w-full border border-white/20 bg-transparent px-3 py-2"
+          className="admin-field mt-2"
           value={order.status}
           onChange={(e) => setStatus(e.target.value as OrderStatus)}
         >
           {STATUSES.map((s) => (
-            <option key={s.id} value={s.id}>{s.label}</option>
+            <option key={s.id} value={s.id}>
+              {s.label}
+            </option>
           ))}
         </select>
       </label>

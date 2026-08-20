@@ -16,23 +16,43 @@ export default function AdminOrdersPage() {
 
   return (
     <div>
-      <h1 className="font-serif text-4xl">Уведомления и заказы</h1>
-      <div className="mt-6 divide-y divide-white/10 border border-white/10">
+      <p className="kicker">Лента</p>
+      <h1 className="font-serif mt-1 text-3xl sm:text-4xl">Заказы</h1>
+      <p className="mt-2 text-sm text-[var(--ink-soft)]">Уведомления о покупках с контактами гостя</p>
+
+      <div className="mt-6 space-y-3">
         {orders.map((order) => (
-          <Link key={order.id} href={`/admin/orders/${order.id}`} className="block px-5 py-5 hover:bg-white/5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-lg">
-                {order.number}
-                {!order.read && <span className="ml-2 text-[10px] uppercase tracking-[0.16em] text-[var(--gold)]">новое уведомление</span>}
-              </p>
-              <span>{formatRub(order.total)}</span>
+          <Link
+            key={order.id}
+            href={`/admin/orders/${order.id}`}
+            className={`admin-card block p-4 transition hover:border-[#0b0b0b] ${!order.read ? "border-[#0b0b0b]" : ""}`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">
+                  {order.number}
+                  {!order.read && (
+                    <span className="ml-2 text-[10px] uppercase tracking-[0.14em] text-[var(--pomegranate)]">новое</span>
+                  )}
+                </p>
+                <p className="mt-1 text-sm text-[var(--ink-soft)]">
+                  {order.customer.firstName} {order.customer.lastName}
+                </p>
+                <p className="mt-0.5 text-sm text-[var(--ink-soft)]">{order.customer.phone}</p>
+                <p className="mt-1 text-xs text-[var(--ink-soft)]">
+                  {order.customer.city} · {formatDateTime(order.createdAt)}
+                </p>
+              </div>
+              <div className="shrink-0 text-right">
+                <p className="text-sm font-medium">{formatRub(order.total)}</p>
+                <p className="mt-1 text-[11px] uppercase tracking-[0.1em] text-[var(--ink-soft)]">{order.status}</p>
+              </div>
             </div>
-            <p className="mt-1 text-sm text-white/60">
-              {order.customer.firstName} {order.customer.lastName} · {order.customer.phone} · {order.customer.city} · {formatDateTime(order.createdAt)}
-            </p>
           </Link>
         ))}
-        {orders.length === 0 && <p className="p-6 text-white/40">Лента пуста</p>}
+        {orders.length === 0 && (
+          <div className="admin-card p-8 text-center text-sm text-[var(--ink-soft)]">Лента пуста</div>
+        )}
       </div>
     </div>
   );

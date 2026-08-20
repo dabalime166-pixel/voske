@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ProductForm } from "@/components/ProductForm";
@@ -15,11 +16,17 @@ export default function EditProductPage() {
       .then(setProduct);
   }, [id]);
 
-  if (!product?.id) return <p>Загружаем карточку...</p>;
+  if (!product?.id) {
+    return <p className="text-sm text-[var(--ink-soft)]">Загружаем карточку…</p>;
+  }
 
   return (
-    <div className="max-w-4xl">
-      <h1 className="font-serif mb-8 text-4xl">Правка · {product.name}</h1>
+    <div className="mx-auto max-w-4xl">
+      <Link href="/admin/products" className="text-sm text-[var(--ink-soft)] underline underline-offset-4">
+        ← К витрине
+      </Link>
+      <p className="kicker mt-4">Правка</p>
+      <h1 className="font-serif mt-1 mb-6 text-3xl sm:text-4xl">{product.name}</h1>
       <ProductForm product={product} />
     </div>
   );
